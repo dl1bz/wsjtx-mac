@@ -1,0 +1,49 @@
+//
+// BUILD WSJT-X improved PLUS under macOS Tahoe & homebrew Qt6 by DL1BZ
+//
+
+rm -rf "$HOME/wsjtx-prefix/wsjtx.app"
+rm -rf "$HOME/src/wsjtx-build"
+
+mkdir -p "$HOME/src/wsjtx-build"
+cd "$HOME/src/wsjtx-build"
+
+export MACOSX_DEPLOYMENT_TARGET=11.0
+export PKG_CONFIG_PATH="/opt/local/jtdxhamlib/lib/pkgconfig:/opt/homebrew/lib/pkgconfig:/opt/homebrew/opt/fftw/lib/pkgconfig:$PKG_CONFIG_PATH"
+
+cmake "$HOME/src/wsjtx" \
+-DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
+-DCMAKE_PREFIX_PATH="/opt/homebrew/opt/qt;/opt/local/jtdxhamlib;/opt/homebrew" \
+-DQt6_DIR="/opt/homebrew/opt/qt/lib/cmake/Qt6" \
+-DCMAKE_INSTALL_PREFIX="$HOME/wsjtx-prefix" \
+-DWSJT_SKIP_MANPAGES=ON \
+-DWSJT_GENERATE_DOCS=OFF
+
+cmake --build . -j"$(sysctl -n hw.ncpu)"
+cmake --build . --target install
+
+APP="$HOME/wsjtx-prefix/wsjtx.app"
+
+sudo chown -R "$USER":staff "$APP"
+chmod -R u+rwX "$APP"
+
+xattr -dr com.apple.quarantine "$APP" 2>/dev/null || true
+
+codesign --force --deep --sign - "$APP"
+
+codesign --verify --deep --strict --verbose=4 "$APP"
+open "$APP"
+
+
+Second Mac:
+APP="/Applications/wsjtx.app"
+
+sudo chown -R "$USER":admin "$APP"
+chmod -R u+rwX "$APP"
+
+sudo xattr -cr "$APP"
+
+codesign --force --deep --timestamp=none --sign - "$APP"
+codesign --verify --deep --strict --verbose=4 "$APP"
+
+open "$APP"

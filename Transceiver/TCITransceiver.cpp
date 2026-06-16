@@ -695,8 +695,11 @@ void TCITransceiver::onMessageReceived(const QString &str) {
           else { mode_ = args.at(1).toLower(); }
         } else { mode_ = args.at(1); }
         if (started_mode_.isEmpty()) { started_mode_ = mode_; }
-        if (busy_mode_) { return; } // was tci_done1();
-        else if (!requested_mode_.isEmpty() && requested_mode_ != mode_ && !band_change) {
+        if (busy_mode_ && tci_timer8_->isActive()) {
+          tci_done8();
+        } else if (busy_mode_) {
+          return;
+        } else if (!requested_mode_.isEmpty() && requested_mode_ != mode_ && !band_change) {
           sendTextMessage(mode_to_command(requested_mode_));
         }
       }
