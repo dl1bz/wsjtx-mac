@@ -9,11 +9,11 @@ mkdir -p "$HOME/src/wsjtx-build"
 cd "$HOME/src/wsjtx-build"
 
 export MACOSX_DEPLOYMENT_TARGET=11.0
-export PKG_CONFIG_PATH="/opt/local/jtdxhamlib/lib/pkgconfig:/opt/homebrew/lib/pkgconfig:/opt/homebrew/opt/fftw/lib/pkgconfig:$PKG_CONFIG_PATH"
+export PKG_CONFIG_PATH="/opt/local/hamlib47/lib/pkgconfig:/opt/homebrew/lib/pkgconfig:/opt/homebrew/opt/fftw/lib/pkgconfig:$PKG_CONFIG_PATH"
 
-cmake "$HOME/src/wsjtx" \
+cmake "$HOME/src/wsjtx-mac-qt6" \
 -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
--DCMAKE_PREFIX_PATH="/opt/homebrew/opt/qt;/opt/local/jtdxhamlib;/opt/homebrew" \
+-DCMAKE_PREFIX_PATH="/opt/homebrew/opt/qt;/opt/local/hamlib47;/opt/homebrew" \
 -DQt6_DIR="/opt/homebrew/opt/qt/lib/cmake/Qt6" \
 -DCMAKE_INSTALL_PREFIX="$HOME/wsjtx-prefix" \
 -DWSJT_SKIP_MANPAGES=ON \
@@ -47,3 +47,8 @@ codesign --force --deep --timestamp=none --sign - "$APP"
 codesign --verify --deep --strict --verbose=4 "$APP"
 
 open "$APP"
+
+cd "$HOME/wsjtx-prefix"
+rm -f wsjtx-macos-arm64.zip
+ditto -c -k --keepParent wsjtx.app wsjtx-macos-arm64.zip
+ls -lh wsjtx-macos-arm64.zip

@@ -96,7 +96,7 @@ if (APPLE OR WIN32)
     list (APPEND fixup_library_dirs
       "/opt/homebrew/opt/qt/lib"
       "/opt/homebrew/lib"
-      "/opt/local/jtdxhamlib/lib"
+      "/opt/local/hamlib47/lib"
       )
 
     foreach (_wsjt_gcc_runtime_dir
